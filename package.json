@@ -1,0 +1,10 @@
+{
+  "name": "com.github.guidoarkesteijn.statemachine",
+  "description": "xNode Statemachine expands on the XNode code base and makes a clean and easy to use state machine.",
+  "version": "0.0.1",
+  "unity": "2018.1",
+  "displayName": "State Machine",
+  "dependencies": {
+    "com.github.siccity.xnode": "https://github.com/siccity/xNode.git"
+  }
+}
