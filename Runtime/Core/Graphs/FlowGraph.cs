@@ -9,13 +9,13 @@ namespace StateMachine.Core.Graphs
     [CreateAssetMenu]
     public class FlowGraph : NodeGraph
     {
-        private FlowNode CurrentNode;
-        private FlowNode[] flowNodes;
+        private BaseFlow CurrentNode;
+        private BaseFlow[] flowNodes;
 
         public void Start()
         {
-            flowNodes = nodes.Where(x => x.GetType() == typeof(FlowNode)).Cast<FlowNode>().ToArray();
-            FlowNode startNode = flowNodes.FirstOrDefault(x => x.IsStartNode);
+            flowNodes = nodes.Where(x => typeof(BaseFlow).IsAssignableFrom(x.GetType())).Cast<BaseFlow>().ToArray();
+            BaseFlow startNode = flowNodes.FirstOrDefault(x => x.IsStartNode);
             SwitchNode(startNode);
         }
 
@@ -25,7 +25,7 @@ namespace StateMachine.Core.Graphs
             {
                 updatable.Update();
             }
-            if (CurrentNode.Validate(out FlowNode newFlowNode))
+            if (CurrentNode.Validate(out BaseFlow newFlowNode))
             {
                 SwitchNode(newFlowNode);
             }
@@ -33,6 +33,10 @@ namespace StateMachine.Core.Graphs
 
         public void LateUpdate()
         {
+            if (CurrentNode != null && CurrentNode is ILateUpdatable lateUpdatable)
+            {
+                lateUpdatable.LateUpdate();
+            }
         }
 
         public void Stop()
@@ -40,7 +44,7 @@ namespace StateMachine.Core.Graphs
             StopNode(CurrentNode);
         }
 
-        private void SwitchNode(FlowNode nextNode)
+        private void SwitchNode(BaseFlow nextNode)
         {
             StopNode(CurrentNode);
 
@@ -49,7 +53,7 @@ namespace StateMachine.Core.Graphs
             StartNode(CurrentNode);
         }
 
-        private void StopNode(FlowNode flowNode)
+        private void StopNode(BaseFlow flowNode)
         {
             if (flowNode != null && flowNode is IStoppable stoppable)
             {
@@ -57,7 +61,7 @@ namespace StateMachine.Core.Graphs
             }
         }
 
-        private void StartNode(FlowNode flowNode)
+        private void StartNode(BaseFlow flowNode)
         {
             if (flowNode != null && flowNode is IStartable startable)
             {
